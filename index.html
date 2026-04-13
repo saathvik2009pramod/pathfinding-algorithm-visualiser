@@ -18,18 +18,18 @@
   <div id="toolbar">
     <div class="toolbar-group">
       <span class="toolbar-label">Draw</span>
-      <button class="tool-btn active" data-tool="wall">✦ Wall</button>
-      <button class="tool-btn" data-tool="start">▶ Start</button>
-      <button class="tool-btn" data-tool="end">⬡ End</button>
-      <button class="tool-btn forest" data-tool="forest">▣ Forest ×3</button>
-      <button class="tool-btn water" data-tool="water">▣ Water ×5</button>
-      <button class="tool-btn" data-tool="erase">◻ Erase</button>
+      <button class="tool-btn active" data-tool="wall">Wall</button>
+      <button class="tool-btn" data-tool="start">Start</button>
+      <button class="tool-btn" data-tool="end">End</button>
+      <button class="tool-btn" data-tool="forest">Forest x3</button>
+      <button class="tool-btn" data-tool="water">Water x5</button>
+      <button class="tool-btn" data-tool="erase">Erase</button>
     </div>
     <div class="sep"></div>
     <div class="toolbar-group">
       <span class="toolbar-label">Grid</span>
-      <button class="tool-btn" onclick="genMaze()">⊞ Maze</button>
-      <button class="tool-btn danger" onclick="clearGrid()">✕ Clear</button>
+      <button class="tool-btn" onclick="genMaze()">Maze</button>
+      <button class="tool-btn" onclick="clearGrid()">Clear</button>
     </div>
     <div class="sep"></div>
     <div class="toolbar-group">
@@ -48,8 +48,8 @@
     </div>
     <div class="sep"></div>
     <div class="toolbar-group">
-      <button class="tool-btn run-btn" onclick="runAll()">▶ Visualise All</button>
-      <button class="tool-btn" onclick="resetPaths()">↺ Reset Paths</button>
+      <button class="tool-btn run-btn" onclick="runAll()">Visualise All</button>
+      <button class="tool-btn" onclick="resetPaths()">Reset Paths</button>
     </div>
   </div>
 
@@ -63,8 +63,8 @@
         <div class="legend-item"><span class="swatch s-start"></span>Start</div>
         <div class="legend-item"><span class="swatch s-end"></span>End</div>
         <div class="legend-item"><span class="swatch s-wall"></span>Wall</div>
-        <div class="legend-item"><span class="swatch s-forest"></span>Forest ×3</div>
-        <div class="legend-item"><span class="swatch s-water"></span>Water ×5</div>
+        <div class="legend-item"><span class="swatch s-forest"></span>Forest x3</div>
+        <div class="legend-item"><span class="swatch s-water"></span>Water x5</div>
         <div class="legend-item"><span class="swatch s-visited"></span>Visited</div>
         <div class="legend-item"><span class="swatch s-path"></span>Path</div>
       </div>
@@ -150,7 +150,7 @@
     <p class="analysis-sub">Populated automatically after each run.</p>
     <div id="analysis-body">
       <div class="analysis-placeholder">
-        Run the visualiser to see a full breakdown — which algorithm found the optimal path, why, and what the tradeoffs were on this specific grid.
+        Run the visualiser to see a full breakdown of which algorithm found the optimal path, why, and what the tradeoffs were on this specific grid.
       </div>
     </div>
   </div>
