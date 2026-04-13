@@ -90,7 +90,7 @@ function runBFS({ grid, rows, cols, startPos, endPos }) {
         algo: 'BFS',
         g: dist[nk], h: null, f: null,
         parent: cur, w: 1,
-        decision: `BFS reached this node at depth ${dist[nk]} via a FIFO queue. Every node at depth ${dist[nk]-1} was already visited before any at this depth — that's what guarantees the minimum hop count path.`
+        decision: `BFS reached this node at depth ${dist[nk]} via a FIFO queue. Every node at depth ${dist[nk] - 1} was already visited before any node at this depth. That ordering is exactly what guarantees the minimum hop count path when all edges have equal weight.`
       };
       queue.push(nk);
     }
@@ -137,7 +137,7 @@ function runDijkstra({ grid, rows, cols, startPos, endPos, weights }) {
           algo: 'Dijkstra',
           g: nd, h: null, f: null,
           parent: cur, w,
-          decision: `Dijkstra relaxed this edge: cost(parent)=${d.toFixed(2)} + terrain_weight=${w} = g(n)=${nd.toFixed(2)}, which improves the previous best. The node gets re-inserted into the min-heap with the updated cost.`
+          decision: `Dijkstra relaxed this edge: cost of parent is ${d.toFixed(2)}, plus terrain weight ${w}, giving g(n) = ${nd.toFixed(2)}. This improves the previous best known cost so the node is re-inserted into the min heap with the updated value.`
         };
         pq.push([nd, nk]);
       }
@@ -188,7 +188,7 @@ function runAStar({ grid, rows, cols, startPos, endPos, weights, hType }) {
           algo: 'A*',
           g: ng, h, f: fv,
           parent: cur, w,
-          decision: `A* chose this node because f(n) = g(n) + h(n) = ${ng.toFixed(2)} + ${h.toFixed(2)} = ${fv.toFixed(2)}. The heuristic is admissible so it never overestimates, meaning A* is guaranteed to find the optimal path. Terrain weight here: ×${w}.`
+          decision: `A* chose this node because f(n) = g(n) + h(n) = ${ng.toFixed(2)} + ${h.toFixed(2)} = ${fv.toFixed(2)}. The heuristic is admissible meaning it never overestimates the true remaining cost, so A* is guaranteed to return the optimal path. Terrain weight entering this cell: x${w}.`
         };
         pq.push([fv, nk]);
       }
@@ -231,7 +231,7 @@ function runDFS({ grid, rows, cols, startPos, endPos }) {
         algo: 'DFS',
         g: null, h: null, f: null,
         parent: cur, w: null,
-        decision: `DFS pushed this node onto the LIFO stack. It will explore this entire subtree before ever backtracking — no cost tracking happens at all, which is why DFS paths are often much longer than necessary.`
+        decision: `DFS pushed this node onto the LIFO stack. It will explore this entire branch fully before ever backtracking. No cost is tracked at any point, which is why DFS paths are often much longer than necessary.`
       };
       stack.push(nk);
     }
@@ -275,7 +275,7 @@ function runGreedy({ grid, rows, cols, startPos, endPos, hType }) {
         algo: 'Greedy',
         g: null, h, f: null,
         parent: cur, w: null,
-        decision: `Greedy picked this node purely because h(n)=${h.toFixed(2)} was the lowest estimate to the goal among its neighbours. It ignores g(n) entirely — no path cost is tracked. This makes it fast but it can easily overshoot on complex or weighted grids.`
+        decision: `Greedy picked this node purely because h(n) = ${h.toFixed(2)} was the lowest straight line estimate to the goal among its neighbours. It ignores path cost g(n) entirely. This makes it fast but it can easily overshoot on complex or weighted grids.`
       };
       pq.push([h, nk]);
     }
