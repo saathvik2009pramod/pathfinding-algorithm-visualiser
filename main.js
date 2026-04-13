@@ -16,11 +16,11 @@ const WEIGHTS = {
 };
 
 const VISITED_COLORS = {
-  bfs:      'rgba(59,130,246,0.28)',
-  dijkstra: 'rgba(139,92,246,0.28)',
-  astar:    'rgba(245,158,11,0.28)',
-  dfs:      'rgba(239,68,68,0.28)',
-  greedy:   'rgba(16,185,129,0.28)',
+  bfs:      'rgba(59,130,246,0.18)',
+  dijkstra: 'rgba(139,92,246,0.18)',
+  astar:    'rgba(245,158,11,0.18)',
+  dfs:      'rgba(239,68,68,0.18)',
+  greedy:   'rgba(16,185,129,0.18)',
 };
 
 const PATH_COLORS = {
@@ -148,16 +148,16 @@ function drawGrid() {
       const type = grid[r][c];
 
       if (type === WALL) {
-        ctx.fillStyle = '#2d3748';
+        ctx.fillStyle = '#374151';
         ctx.fillRect(x+1, y+1, CELL_SIZE-2, CELL_SIZE-2);
       } else if (type === FOREST) {
-        ctx.fillStyle = 'rgba(74,222,128,0.2)';
+        ctx.fillStyle = 'rgba(74,222,128,0.3)';
         ctx.fillRect(x+1, y+1, CELL_SIZE-2, CELL_SIZE-2);
       } else if (type === WATER) {
-        ctx.fillStyle = 'rgba(147,197,253,0.2)';
+        ctx.fillStyle = 'rgba(147,197,253,0.3)';
         ctx.fillRect(x+1, y+1, CELL_SIZE-2, CELL_SIZE-2);
       } else {
-        ctx.fillStyle = (r+c) % 2 === 0 ? 'rgba(255,255,255,0.018)' : 'transparent';
+        ctx.fillStyle = (r+c) % 2 === 0 ? 'rgba(0,0,0,0.02)' : '#ffffff';
         ctx.fillRect(x+1, y+1, CELL_SIZE-2, CELL_SIZE-2);
       }
 
@@ -174,32 +174,32 @@ function drawGrid() {
         const pl = pathLayers[algo];
         if (pl && pl.has(k)) {
           ctx.fillStyle = PATH_COLORS[algo];
-          ctx.globalAlpha = 0.58;
+          ctx.globalAlpha = 0.7;
           ctx.fillRect(x+2, y+2, CELL_SIZE-4, CELL_SIZE-4);
           ctx.globalAlpha = 1;
           break;
         }
       }
 
-      ctx.strokeStyle = 'rgba(255,255,255,0.045)';
+      ctx.strokeStyle = 'rgba(0,0,0,0.07)';
       ctx.lineWidth = 0.5;
       ctx.strokeRect(x, y, CELL_SIZE, CELL_SIZE);
     }
   }
 
-  drawMarker(startPos.r, startPos.c, '#22c55e', '▶');
-  drawMarker(endPos.r, endPos.c, '#ef4444', '◉');
+  drawMarker(startPos.r, startPos.c, '#22c55e', 'S');
+  drawMarker(endPos.r, endPos.c, '#ef4444', 'E');
 }
 
-function drawMarker(r, c, color, sym) {
+function drawMarker(r, c, color, letter) {
   const x = c * CELL_SIZE, y = r * CELL_SIZE;
   ctx.fillStyle = color;
   ctx.fillRect(x+1, y+1, CELL_SIZE-2, CELL_SIZE-2);
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 11px Verdana, sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 10px Verdana, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(sym, x + CELL_SIZE/2, y + CELL_SIZE/2);
+  ctx.fillText(letter, x + CELL_SIZE/2, y + CELL_SIZE/2);
 }
 
 async function runAll() {
@@ -216,7 +216,7 @@ async function runAll() {
   const speed = parseInt(speedSlider.value);
   const delay = Math.max(1, Math.round((101 - speed) * 0.4));
 
-  setStatus('Computing paths…');
+  setStatus('Computing paths...');
 
   const params = { grid, rows: ROWS, cols: COLS, startPos, endPos, weights: WEIGHTS, hType };
 
@@ -229,25 +229,25 @@ async function runAll() {
   const ei = endPos.r * COLS + endPos.c;
 
   const paths = {
-    bfs:      bfsR.dist?.[ei]    >= 0         ? reconstructPath(bfsR.prev,    ei) : [],
-    dijkstra: dijkR.dist?.[ei]   < Infinity   ? reconstructPath(dijkR.prev,   ei) : [],
-    astar:    astarR.dist?.[ei]  < Infinity   ? reconstructPath(astarR.prev,  ei) : [],
-    dfs:      dfsR.prev?.[ei]    !== -1       ? reconstructPath(dfsR.prev,    ei) : [],
-    greedy:   greedyR.prev?.[ei] !== -1       ? reconstructPath(greedyR.prev, ei) : [],
+    bfs:      bfsR.dist?.[ei]    >= 0        ? reconstructPath(bfsR.prev,    ei) : [],
+    dijkstra: dijkR.dist?.[ei]   < Infinity  ? reconstructPath(dijkR.prev,   ei) : [],
+    astar:    astarR.dist?.[ei]  < Infinity  ? reconstructPath(astarR.prev,  ei) : [],
+    dfs:      dfsR.prev?.[ei]    !== -1      ? reconstructPath(dfsR.prev,    ei) : [],
+    greedy:   greedyR.prev?.[ei] !== -1      ? reconstructPath(greedyR.prev, ei) : [],
   };
 
   const results = {
-    bfs:      { order: bfsR.order,    pathLen: paths.bfs.length    ? paths.bfs.length    - 1 : -1, time: bfsT    },
-    dijkstra: { order: dijkR.order,   pathLen: paths.dijkstra.length ? paths.dijkstra.length - 1 : -1, time: dijkT  },
-    astar:    { order: astarR.order,  pathLen: paths.astar.length   ? paths.astar.length   - 1 : -1, time: astarT  },
-    dfs:      { order: dfsR.order,    pathLen: paths.dfs.length    ? paths.dfs.length    - 1 : -1, time: dfsT    },
-    greedy:   { order: greedyR.order, pathLen: paths.greedy.length  ? paths.greedy.length  - 1 : -1, time: greedyT },
+    bfs:      { order: bfsR.order,    pathLen: paths.bfs.length      ? paths.bfs.length      - 1 : -1, time: bfsT    },
+    dijkstra: { order: dijkR.order,   pathLen: paths.dijkstra.length ? paths.dijkstra.length - 1 : -1, time: dijkT   },
+    astar:    { order: astarR.order,  pathLen: paths.astar.length    ? paths.astar.length    - 1 : -1, time: astarT  },
+    dfs:      { order: dfsR.order,    pathLen: paths.dfs.length      ? paths.dfs.length      - 1 : -1, time: dfsT    },
+    greedy:   { order: greedyR.order, pathLen: paths.greedy.length   ? paths.greedy.length   - 1 : -1, time: greedyT },
   };
 
   const costs = {
-    bfs:      bfsR.dist?.[ei]    >= 0        ? bfsR.dist[ei]    : null,
-    dijkstra: dijkR.dist?.[ei]   < Infinity  ? dijkR.dist[ei]   : null,
-    astar:    astarR.dist?.[ei]  < Infinity  ? astarR.dist[ei]  : null,
+    bfs:      bfsR.dist?.[ei]    >= 0       ? bfsR.dist[ei]    : null,
+    dijkstra: dijkR.dist?.[ei]   < Infinity ? dijkR.dist[ei]   : null,
+    astar:    astarR.dist?.[ei]  < Infinity ? astarR.dist[ei]  : null,
     dfs:      null,
     greedy:   null,
   };
@@ -259,11 +259,11 @@ async function runAll() {
   for (const [algo, data] of Object.entries(results)) {
     const prefix = algo === 'dijkstra' ? 'dijk' : algo;
     document.getElementById(`${prefix}-nodes`).textContent = data.order.length;
-    document.getElementById(`${prefix}-path`).textContent  = data.pathLen >= 0 ? data.pathLen : '✕';
+    document.getElementById(`${prefix}-path`).textContent  = data.pathLen >= 0 ? data.pathLen : 'x';
     document.getElementById(`${prefix}-time`).textContent  = data.time.toFixed(1);
   }
 
-  setStatus('Animating…');
+  setStatus('Animating...');
 
   await Promise.all(
     Object.entries(paths).map(([algo, path]) =>
@@ -312,36 +312,34 @@ function buildAnalysis(results, costs, paths, hType) {
   const algosWithPath = Object.keys(paths).filter(a => paths[a].length > 0);
 
   if (!algosWithPath.length) {
-    body.innerHTML = '<div class="analysis-placeholder">No algorithm found a path — the end node may be unreachable.</div>';
+    body.innerHTML = '<div class="analysis-placeholder">No algorithm found a path. The end node may be unreachable.</div>';
     return;
   }
 
-  const optimalCost = Math.min(...Object.values(costs).filter(v => v !== null));
+  const validCosts = Object.values(costs).filter(v => v !== null);
+  const optimalCost = Math.min(...validCosts);
   const optimalAlgos = Object.keys(costs).filter(a => costs[a] !== null && Math.abs(costs[a] - optimalCost) < 0.01);
 
-  const fewestNodes = Math.min(...algosWithPath.map(a => results[a].order.length));
-  const mostEfficient = algosWithPath.filter(a => results[a].order.length === fewestNodes);
-
-  const shortestHops = Math.min(...algosWithPath.filter(a => results[a].pathLen >= 0).map(a => results[a].pathLen));
-
-  const astarOptimal = optimalAlgos.includes('astar');
-  const astarNodes = results.astar.order.length;
-  const dijkNodes = results.dijkstra.order.length;
-  const bfsNodes = results.bfs.order.length;
+  const shortestHops = Math.min(
+    ...algosWithPath.filter(a => results[a].pathLen >= 0).map(a => results[a].pathLen)
+  );
 
   const rankByNodes = algosWithPath
     .filter(a => results[a].order.length > 0)
     .sort((a, b) => results[a].order.length - results[b].order.length);
+
+  const astarNodes = results.astar.order.length;
+  const dijkNodes  = results.dijkstra.order.length;
 
   let html = '<div class="analysis-grid">';
 
   html += `
     <div class="analysis-card winner">
       <h3>Optimal path found by</h3>
-      <div class="winner-name" style="color:${PATH_COLORS[optimalAlgos[0]] || '#f59e0b'}">
+      <div class="winner-name" style="color:${PATH_COLORS[optimalAlgos[0]] || '#1a1a1a'}">
         ${optimalAlgos.map(a => ALGO_NAMES[a]).join(' + ')}
       </div>
-      <p>Weighted path cost: <strong>${optimalCost.toFixed(1)}</strong>${hasWeighted ? ' (accounting for forest and water terrain)' : ''}.</p>
+      <p>Weighted path cost: <strong>${optimalCost.toFixed(1)}</strong>${hasWeighted ? ', accounting for forest and water terrain costs' : ''}.</p>
     </div>
   `;
 
@@ -360,24 +358,29 @@ function buildAnalysis(results, costs, paths, hType) {
   html += `
     <div class="analysis-card">
       <h3>Path lengths</h3>
-      ${algosWithPath.filter(a => results[a].pathLen >= 0).sort((a,b) => results[a].pathLen - results[b].pathLen).map(a => `
-        <div class="metric-row">
-          <span class="label" style="color:${PATH_COLORS[a]}">${ALGO_NAMES[a]}</span>
-          <span class="val">${results[a].pathLen} steps</span>
-        </div>
-      `).join('')}
+      ${algosWithPath
+        .filter(a => results[a].pathLen >= 0)
+        .sort((a, b) => results[a].pathLen - results[b].pathLen)
+        .map(a => `
+          <div class="metric-row">
+            <span class="label" style="color:${PATH_COLORS[a]}">${ALGO_NAMES[a]}</span>
+            <span class="val">${results[a].pathLen} steps</span>
+          </div>
+        `).join('')}
     </div>
   `;
 
   html += `
     <div class="analysis-card">
       <h3>Execution time</h3>
-      ${Object.entries(results).sort((a,b) => a[1].time - b[1].time).map(([a, d]) => `
-        <div class="metric-row">
-          <span class="label" style="color:${PATH_COLORS[a]}">${ALGO_NAMES[a]}</span>
-          <span class="val">${d.time.toFixed(2)}ms</span>
-        </div>
-      `).join('')}
+      ${Object.entries(results)
+        .sort((a, b) => a[1].time - b[1].time)
+        .map(([a, d]) => `
+          <div class="metric-row">
+            <span class="label" style="color:${PATH_COLORS[a]}">${ALGO_NAMES[a]}</span>
+            <span class="val">${d.time.toFixed(2)}ms</span>
+          </div>
+        `).join('')}
     </div>
   `;
 
@@ -386,30 +389,30 @@ function buildAnalysis(results, costs, paths, hType) {
   html += '<div class="analysis-verdict"><h3>Verdict</h3>';
 
   if (hasWeighted) {
-    html += `<p>This grid has weighted terrain (forest ×3, water ×5), which changes the picture significantly. 
-    <span class="tag tag-correct">BFS</span> finds the shortest <em>hop count</em> but ignores terrain cost entirely — 
-    its path may look short but could pass through expensive cells.
-    <span class="tag tag-optimal">Dijkstra</span> and <span class="tag tag-optimal">A*</span> both account for weights, 
+    html += `<p>This grid has weighted terrain (forest costs 3, water costs 5), which changes the picture significantly. 
+    <span class="tag">BFS</span> finds the shortest hop count but ignores terrain cost entirely, 
+    so its path may look short but could pass through expensive cells. 
+    <span class="tag">Dijkstra</span> and <span class="tag">A*</span> both account for weights, 
     so their weighted cost of <strong>${optimalCost.toFixed(1)}</strong> is the true optimum on this grid.</p>`;
   } else {
-    html += `<p>No weighted terrain — all cells cost the same to traverse, so path length and cost are equivalent. 
-    <span class="tag tag-correct">BFS</span>, <span class="tag tag-optimal">Dijkstra</span>, and <span class="tag tag-optimal">A*</span> 
-    all guarantee the shortest path in this case. The difference between them only becomes meaningful when terrain weights are introduced.</p>`;
+    html += `<p>No weighted terrain on this grid, so all cells cost the same to traverse and path length equals path cost. 
+    <span class="tag">BFS</span>, <span class="tag">Dijkstra</span>, and <span class="tag">A*</span> 
+    all guarantee the shortest path in this case. The real differences between them only become visible once terrain weights are introduced.</p>`;
   }
 
-  if (astarOptimal) {
+  if (optimalAlgos.includes('astar') && dijkNodes > 0) {
     const savings = Math.round((1 - astarNodes / dijkNodes) * 100);
     if (savings > 5) {
       html += `<p>A* explored <strong>${astarNodes.toLocaleString()}</strong> nodes to find that path, 
-      versus Dijkstra's <strong>${dijkNodes.toLocaleString()}</strong> — roughly <strong>${savings}% fewer</strong>. 
-      That advantage comes from the <strong>${hType} heuristic</strong>, which steers expansion towards the goal 
-      instead of radiating outward uniformly. The heuristic is admissible (it never overestimates the true remaining cost), 
-      so the optimal path is still guaranteed.</p>`;
+      compared to Dijkstra's <strong>${dijkNodes.toLocaleString()}</strong>, roughly <strong>${savings}% fewer</strong>. 
+      That advantage comes from the <strong>${hType} heuristic</strong>, which steers expansion toward the goal 
+      rather than radiating outward uniformly. Because the heuristic is admissible and never overestimates the true remaining cost, 
+      the optimal path is still guaranteed.</p>`;
     } else {
-      html += `<p>On this particular grid, A* and Dijkstra explored a similar number of nodes 
+      html += `<p>On this particular grid A* and Dijkstra explored a similar number of nodes 
       (<strong>${astarNodes.toLocaleString()}</strong> vs <strong>${dijkNodes.toLocaleString()}</strong>). 
-      The ${hType} heuristic has limited room to prune when the path is relatively direct — 
-      A*'s advantage grows more dramatically on larger grids or when walls force longer detours.</p>`;
+      The ${hType} heuristic has limited room to prune when the path is relatively direct. 
+      A*'s advantage grows more dramatically on larger or more obstacle heavy grids.</p>`;
     }
   }
 
@@ -417,32 +420,28 @@ function buildAnalysis(results, costs, paths, hType) {
   if (dfsLen > 0 && dfsLen > shortestHops) {
     const overhead = Math.round(((dfsLen - shortestHops) / shortestHops) * 100);
     html += `<p>DFS found a path of length <strong>${dfsLen}</strong>, which is 
-    <strong>${dfsLen - shortestHops} steps (${overhead}%) longer</strong> than the optimal. 
-    This is expected — DFS commits to one branch at a time with no cost awareness, 
-    so it stumbles upon the goal rather than seeking it efficiently. 
-    It also explored <strong>${results.dfs.order.length.toLocaleString()}</strong> nodes, 
-    making it one of the heavier searches on this layout.</p>`;
+    <strong>${dfsLen - shortestHops} steps (${overhead}%) longer</strong> than optimal. 
+    This is expected because DFS commits to one branch at a time with no cost awareness, 
+    stumbling upon the goal rather than seeking it efficiently. 
+    It explored <strong>${results.dfs.order.length.toLocaleString()}</strong> nodes in the process.</p>`;
   }
 
   const greedyLen = results.greedy.pathLen;
-  const greedyOptimal = optimalAlgos.includes('greedy');
-  if (greedyLen > 0 && !greedyOptimal) {
-    html += `<p>Greedy Best-First looked fast — only <strong>${results.greedy.order.length.toLocaleString()}</strong> nodes — 
-    but its path cost was <strong>${paths.greedy.length - 1}</strong> steps, 
-    ${hasWeighted ? 'and it ignored terrain weights entirely' : 'which is suboptimal'}. 
-    Without tracking g(n), it rushes towards the goal by straight-line estimate 
-    and can be lured through unnecessarily expensive or circuitous routes.</p>`;
-  } else if (greedyLen > 0 && greedyOptimal) {
-    html += `<p>Interestingly, Greedy Best-First happened to find the optimal path on this grid too, 
+  if (greedyLen > 0 && !optimalAlgos.includes('greedy')) {
+    html += `<p>Greedy Best-First explored only <strong>${results.greedy.order.length.toLocaleString()}</strong> nodes 
+    but its path was suboptimal${hasWeighted ? ', partly because it ignored terrain weights entirely' : ''}. 
+    Without tracking g(n) it rushes toward the goal by straight line estimate 
+    and can be lured through unnecessarily expensive or roundabout routes.</p>`;
+  } else if (greedyLen > 0 && optimalAlgos.includes('greedy')) {
+    html += `<p>Greedy Best-First happened to find the optimal path on this grid too, 
     and did so while exploring only <strong>${results.greedy.order.length.toLocaleString()}</strong> nodes. 
-    This doesn't mean it's reliable — its luck depends heavily on grid geometry. 
-    Add a few walls or weighted cells and Greedy can diverge significantly from optimal.</p>`;
+    This does not mean it is reliable. Add a few walls or weighted cells and Greedy can diverge significantly from optimal.</p>`;
   }
 
-  html += `<p style="margin-top:10px">For production pathfinding — GPS routing, game AI, robot navigation — 
+  html += `<p style="margin-top:10px">For production pathfinding such as GPS routing, game AI, or robot navigation, 
   <strong>A* with an admissible heuristic</strong> is the standard choice. 
-  It matches Dijkstra's correctness guarantee while exploring a fraction of the nodes, 
-  and the heuristic can be tuned to the specific geometry of the problem domain.</p>`;
+  It matches Dijkstra's correctness guarantee while exploring far fewer nodes, 
+  and the heuristic can be tuned to the geometry of the specific problem.</p>`;
 
   html += '</div>';
 
@@ -450,11 +449,9 @@ function buildAnalysis(results, costs, paths, hType) {
 }
 
 function gridHasWeightedTerrain() {
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++)
       if (grid[r][c] === FOREST || grid[r][c] === WATER) return true;
-    }
-  }
   return false;
 }
 
@@ -479,7 +476,7 @@ function showNodeExplanation({ r, c }) {
     html += '</div>';
   }
   if (data.w != null) {
-    html += `<p style="margin-top:5px;opacity:0.65">Terrain weight entering this cell: ×${data.w}</p>`;
+    html += `<p style="margin-top:5px;color:#aaa">Terrain weight entering this cell: x${data.w}</p>`;
   }
 
   eb.innerHTML = html;
@@ -565,7 +562,7 @@ function resetPaths() {
 
 function clearAnalysis() {
   document.getElementById('analysis-body').innerHTML =
-    '<div class="analysis-placeholder">Run the visualiser to see a full breakdown — which algorithm found the optimal path, why, and what the tradeoffs were on this specific grid.</div>';
+    '<div class="analysis-placeholder">Run the visualiser to see a full breakdown of which algorithm found the optimal path, why, and what the tradeoffs were on this specific grid.</div>';
 }
 
 function setStatus(msg) {
