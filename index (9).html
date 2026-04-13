@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pathfinding Visualiser</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <header id="site-header">
+    <h1>Pathfinding Visualiser</h1>
+    <p class="subtitle">BFS &nbsp;·&nbsp; Dijkstra &nbsp;·&nbsp; A* &nbsp;·&nbsp; DFS &nbsp;·&nbsp; Greedy Best-First</p>
+  </header>
+
+  <div id="toolbar">
+    <div class="toolbar-group">
+      <span class="toolbar-label">Draw</span>
+      <button class="tool-btn active" data-tool="wall">✦ Wall</button>
+      <button class="tool-btn" data-tool="start">▶ Start</button>
+      <button class="tool-btn" data-tool="end">⬡ End</button>
+      <button class="tool-btn forest" data-tool="forest">▣ Forest ×3</button>
+      <button class="tool-btn water" data-tool="water">▣ Water ×5</button>
+      <button class="tool-btn" data-tool="erase">◻ Erase</button>
+    </div>
+    <div class="sep"></div>
+    <div class="toolbar-group">
+      <span class="toolbar-label">Grid</span>
+      <button class="tool-btn" onclick="genMaze()">⊞ Maze</button>
+      <button class="tool-btn danger" onclick="clearGrid()">✕ Clear</button>
+    </div>
+    <div class="sep"></div>
+    <div class="toolbar-group">
+      <span class="toolbar-label">Heuristic</span>
+      <select id="heuristic-sel">
+        <option value="manhattan">Manhattan</option>
+        <option value="euclidean">Euclidean</option>
+        <option value="chebyshev">Chebyshev</option>
+      </select>
+    </div>
+    <div class="sep"></div>
+    <div class="toolbar-group">
+      <span class="toolbar-label">Speed</span>
+      <input type="range" id="speed" min="1" max="100" value="50" />
+      <span id="speed-label">50</span>
+    </div>
+    <div class="sep"></div>
+    <div class="toolbar-group">
+      <button class="tool-btn run-btn" onclick="runAll()">▶ Visualise All</button>
+      <button class="tool-btn" onclick="resetPaths()">↺ Reset Paths</button>
+    </div>
+  </div>
+
+  <div id="status-bar">Draw walls by clicking or dragging, then hit <strong>Visualise All</strong>.</div>
+
+  <div id="main">
+
+    <div id="grid-wrap">
+      <canvas id="grid-canvas"></canvas>
+      <div id="legend">
+        <div class="legend-item"><span class="swatch s-start"></span>Start</div>
+        <div class="legend-item"><span class="swatch s-end"></span>End</div>
+        <div class="legend-item"><span class="swatch s-wall"></span>Wall</div>
+        <div class="legend-item"><span class="swatch s-forest"></span>Forest ×3</div>
+        <div class="legend-item"><span class="swatch s-water"></span>Water ×5</div>
+        <div class="legend-item"><span class="swatch s-visited"></span>Visited</div>
+        <div class="legend-item"><span class="swatch s-path"></span>Path</div>
+      </div>
+    </div>
+
+    <div id="panels">
+
+      <div class="algo-panel">
+        <div class="algo-header">
+          <span class="algo-name" style="color:#3b82f6">BFS</span>
+          <span class="algo-tag">O(V+E) · queue · unweighted shortest path</span>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><span class="stat-val" id="bfs-nodes">—</span><span class="stat-lbl">visited</span></div>
+          <div class="stat"><span class="stat-val" id="bfs-path">—</span><span class="stat-lbl">path len</span></div>
+          <div class="stat"><span class="stat-val" id="bfs-time">—</span><span class="stat-lbl">ms</span></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="bfs-prog" style="background:#3b82f6"></div></div>
+      </div>
+
+      <div class="algo-panel">
+        <div class="algo-header">
+          <span class="algo-name" style="color:#8b5cf6">Dijkstra</span>
+          <span class="algo-tag">O((V+E)logV) · min-heap · weighted shortest path</span>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><span class="stat-val" id="dijk-nodes">—</span><span class="stat-lbl">visited</span></div>
+          <div class="stat"><span class="stat-val" id="dijk-path">—</span><span class="stat-lbl">path len</span></div>
+          <div class="stat"><span class="stat-val" id="dijk-time">—</span><span class="stat-lbl">ms</span></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="dijk-prog" style="background:#8b5cf6"></div></div>
+      </div>
+
+      <div class="algo-panel">
+        <div class="algo-header">
+          <span class="algo-name" style="color:#f59e0b">A*</span>
+          <span class="algo-tag">O((V+E)logV) · min-heap + admissible heuristic</span>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><span class="stat-val" id="astar-nodes">—</span><span class="stat-lbl">visited</span></div>
+          <div class="stat"><span class="stat-val" id="astar-path">—</span><span class="stat-lbl">path len</span></div>
+          <div class="stat"><span class="stat-val" id="astar-time">—</span><span class="stat-lbl">ms</span></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="astar-prog" style="background:#f59e0b"></div></div>
+      </div>
+
+      <div class="algo-panel">
+        <div class="algo-header">
+          <span class="algo-name" style="color:#ef4444">DFS</span>
+          <span class="algo-tag">O(V+E) · stack · non-optimal</span>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><span class="stat-val" id="dfs-nodes">—</span><span class="stat-lbl">visited</span></div>
+          <div class="stat"><span class="stat-val" id="dfs-path">—</span><span class="stat-lbl">path len</span></div>
+          <div class="stat"><span class="stat-val" id="dfs-time">—</span><span class="stat-lbl">ms</span></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="dfs-prog" style="background:#ef4444"></div></div>
+      </div>
+
+      <div class="algo-panel">
+        <div class="algo-header">
+          <span class="algo-name" style="color:#10b981">Greedy Best-First</span>
+          <span class="algo-tag">O(b^m) · heuristic only · fast but suboptimal</span>
+        </div>
+        <div class="stats-row">
+          <div class="stat"><span class="stat-val" id="greedy-nodes">—</span><span class="stat-lbl">visited</span></div>
+          <div class="stat"><span class="stat-val" id="greedy-path">—</span><span class="stat-lbl">path len</span></div>
+          <div class="stat"><span class="stat-val" id="greedy-time">—</span><span class="stat-lbl">ms</span></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="greedy-prog" style="background:#10b981"></div></div>
+      </div>
+
+      <div id="explain-panel">
+        <div id="explain-title">Node decision</div>
+        <div id="explain-body"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="analysis-section">
+    <h2>Run Analysis</h2>
+    <p class="analysis-sub">Populated automatically after each run.</p>
+    <div id="analysis-body">
+      <div class="analysis-placeholder">
+        Run the visualiser to see a full breakdown — which algorithm found the optimal path, why, and what the tradeoffs were on this specific grid.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="algorithms.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
