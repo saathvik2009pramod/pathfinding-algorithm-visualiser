@@ -304,7 +304,7 @@ function animateAlgo(algo, order, pathSet, delay) {
     step();
   });
 }
- ## cyclical entropy --> highly 
+
 function buildAnalysis(results, costs, paths, hType) {
   const body = document.getElementById('analysis-body');
 
